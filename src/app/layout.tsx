@@ -20,10 +20,6 @@ export const metadata: Metadata = {
   authors: [{ name: "Nadhiv Adam" }],
   creator: "Nadhiv Adam",
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://nadhivadam.my.id"),
-  icons: {
-    icon: "/ndhvlogo.png",
-    apple: "/ndhvlogo.png",
-  },
   
   openGraph: {
     title: "Nadhiv Adam - Web Developer Sukabumi",
@@ -60,7 +56,7 @@ export const metadata: Metadata = {
   },
   
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_BASE_URL || "https://nadhivadam.com",
+    canonical: process.env.NEXT_PUBLIC_BASE_URL || "https://nadhivadam.my.id",
   },
 };
 
