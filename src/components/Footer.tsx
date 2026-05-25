@@ -25,6 +25,9 @@ export default function Footer() {
   const email = profile?.email || "nadhiv@example.com";
   const github = profile?.github_url || "https://github.com/nadhiv";
   const linkedin = profile?.linkedin_url || "https://linkedin.com/in/nadhiv";
+  const instagram = profile?.instagram_url;
+  const twitter = profile?.twitter_url;
+  const youtube = profile?.youtube_url;
 
   return (
     <footer className="relative z-10 bg-gradient-to-t from-background/80 via-background/90 to-transparent py-14 md:py-20 transition-colors duration-300 backdrop-blur-xl">
@@ -52,7 +55,7 @@ export default function Footer() {
               href={github}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full p-2 text-muted-foreground hover:text-primary transition-colors duration-200"
+              className="rounded-full p-2 text-muted-foreground hover:text-primary hover:scale-110 active:scale-95 transform transition-all duration-200"
               aria-label="GitHub"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -64,7 +67,7 @@ export default function Footer() {
               href={linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full p-2 text-muted-foreground hover:text-primary transition-colors duration-200"
+              className="rounded-full p-2 text-muted-foreground hover:text-primary hover:scale-110 active:scale-95 transform transition-all duration-200"
               aria-label="LinkedIn"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -73,9 +76,51 @@ export default function Footer() {
                 <circle cx="4" cy="4" r="2" />
               </svg>
             </a>
+            {instagram && (
+              <a
+                href={instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full p-2 text-muted-foreground hover:text-primary hover:scale-110 active:scale-95 transform transition-all duration-200"
+                aria-label="Instagram"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
+              </a>
+            )}
+            {twitter && (
+              <a
+                href={twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full p-2 text-muted-foreground hover:text-primary hover:scale-110 active:scale-95 transform transition-all duration-200"
+                aria-label="Twitter / X"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+                </svg>
+              </a>
+            )}
+            {youtube && (
+              <a
+                href={youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full p-2 text-muted-foreground hover:text-primary hover:scale-110 active:scale-95 transform transition-all duration-200"
+                aria-label="YouTube"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17z" />
+                  <polygon points="10 15 15 12 10 9" fill="currentColor" />
+                </svg>
+              </a>
+            )}
             <a
               href={`mailto:${email}`}
-              className="rounded-full p-2 text-muted-foreground hover:text-primary transition-colors duration-200"
+              className="rounded-full p-2 text-muted-foreground hover:text-primary hover:scale-110 active:scale-95 transform transition-all duration-200"
               aria-label="Email"
             >
               <Mail className="h-5 w-5" />

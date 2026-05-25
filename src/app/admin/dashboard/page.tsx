@@ -85,6 +85,9 @@ export default function AdminDashboardPage() {
   const [githubUrl, setGithubUrl] = React.useState("");
   const [linkedinUrl, setLinkedinUrl] = React.useState("");
   const [resumeUrl, setResumeUrl] = React.useState("");
+  const [instagramUrl, setInstagramUrl] = React.useState("");
+  const [twitterUrl, setTwitterUrl] = React.useState("");
+  const [youtubeUrl, setYoutubeUrl] = React.useState("");
   const [savingProfile, setSavingProfile] = React.useState(false);
 
   // Guard route: redirect unauthenticated users
@@ -126,6 +129,9 @@ export default function AdminDashboardPage() {
       setGithubUrl(fetchedProfile.github_url);
       setLinkedinUrl(fetchedProfile.linkedin_url);
       setResumeUrl(fetchedProfile.resume_url || "");
+      setInstagramUrl(fetchedProfile.instagram_url || "");
+      setTwitterUrl(fetchedProfile.twitter_url || "");
+      setYoutubeUrl(fetchedProfile.youtube_url || "");
     } catch (err: any) {
       toast.error(err.message || "Failed to load dashboard data.");
     } finally {
@@ -245,6 +251,9 @@ export default function AdminDashboardPage() {
         github_url: githubUrl.trim(),
         linkedin_url: linkedinUrl.trim(),
         resume_url: resumeUrl.trim(),
+        instagram_url: instagramUrl.trim(),
+        twitter_url: twitterUrl.trim(),
+        youtube_url: youtubeUrl.trim(),
       };
 
       const result = await updateProfile(payload);
@@ -771,6 +780,37 @@ export default function AdminDashboardPage() {
                             required
                           />
                         </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase">Instagram URL</label>
+                          <input
+                            type="url"
+                            value={instagramUrl}
+                            onChange={(e) => setInstagramUrl(e.target.value)}
+                            placeholder="https://instagram.com/username"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-border bg-secondary/10 text-xs text-foreground focus:outline-none focus:border-primary"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase">Twitter / X URL</label>
+                          <input
+                            type="url"
+                            value={twitterUrl}
+                            onChange={(e) => setTwitterUrl(e.target.value)}
+                            placeholder="https://twitter.com/username"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-border bg-secondary/10 text-xs text-foreground focus:outline-none focus:border-primary"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase">YouTube Channel URL</label>
+                        <input
+                          type="url"
+                          value={youtubeUrl}
+                          onChange={(e) => setYoutubeUrl(e.target.value)}
+                          placeholder="https://youtube.com/@channel"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-border bg-secondary/10 text-xs text-foreground focus:outline-none focus:border-primary"
+                        />
                       </div>
 
                       {/* Metric widgets */}

@@ -64,6 +64,9 @@ export interface Profile {
   location: string;
   availability: string;
   resume_url?: string;
+  instagram_url?: string;
+  twitter_url?: string;
+  youtube_url?: string;
   updated_at?: string;
 }
 
@@ -134,6 +137,9 @@ export const DEFAULT_PROFILE: Profile = {
   location: 'Jakarta, Indonesia',
   availability: 'Available for Freelance & Full-time',
   resume_url: '',
+  instagram_url: '',
+  twitter_url: '',
+  youtube_url: '',
   updated_at: new Date().toISOString()
 };
 
@@ -428,7 +434,31 @@ export async function getProfile(): Promise<Profile> {
       }
       throw error;
     }
-    return data as Profile;
+
+    const merged = { ...data } as Profile;
+
+    // Load local storage overrides if columns don't exist or are null in Supabase
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(LS_KEYS.PROFILE);
+      if (stored) {
+        try {
+          const localProfile = JSON.parse(stored) as Partial<Profile>;
+          if (merged.instagram_url === undefined && localProfile.instagram_url !== undefined) {
+            merged.instagram_url = localProfile.instagram_url;
+          }
+          if (merged.twitter_url === undefined && localProfile.twitter_url !== undefined) {
+            merged.twitter_url = localProfile.twitter_url;
+          }
+          if (merged.youtube_url === undefined && localProfile.youtube_url !== undefined) {
+            merged.youtube_url = localProfile.youtube_url;
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+    }
+
+    return merged;
   } catch (err) {
     console.error('Failed to fetch profile from Supabase. Falling back to localStorage:', err);
     return getLS<Profile>(LS_KEYS.PROFILE, DEFAULT_PROFILE);
@@ -438,7 +468,8 @@ export async function getProfile(): Promise<Profile> {
 export async function updateProfile(updates: Partial<Omit<Profile, 'id' | 'updated_at'>>): Promise<Profile> {
   const profileId = '00000000-0000-0000-0000-000000000000';
   
-  if (!supabase) {
+  // Always save to localStorage as a fallback/cache
+  if (typeof window !== 'undefined') {
     const local = getLS<Profile>(LS_KEYS.PROFILE, DEFAULT_PROFILE);
     const updated: Profile = {
       ...local,
@@ -446,27 +477,62 @@ export async function updateProfile(updates: Partial<Omit<Profile, 'id' | 'updat
       updated_at: new Date().toISOString()
     };
     saveLS(LS_KEYS.PROFILE, updated);
-    return updated;
+  }
+
+  if (!supabase) {
+    return getLS<Profile>(LS_KEYS.PROFILE, DEFAULT_PROFILE);
   }
 
   // Check if profile exists, if not seed it first
   const { data: existing } = await supabase.from('profile').select('id').single();
-  
   const targetId = existing?.id || profileId;
-  const payload = {
+  
+  const payload: any = {
     ...updates,
     updated_at: new Date().toISOString()
   };
 
-  const { data, error } = await supabase
-    .from('profile')
-    .update(payload)
-    .eq('id', targetId)
-    .select()
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from('profile')
+      .update(payload)
+      .eq('id', targetId)
+      .select()
+      .single();
 
-  if (error) throw new Error(error.message);
-  return data as Profile;
+    if (error) {
+      // If error is undefined column (Postgres error code 42703)
+      if (error.code === '42703') {
+        console.warn('New social media columns not present in Supabase table. Falling back to local storage caching for social media fields.');
+        // Strip the new columns and try updating standard columns
+        const strippedPayload = { ...payload };
+        delete strippedPayload.instagram_url;
+        delete strippedPayload.twitter_url;
+        delete strippedPayload.youtube_url;
+
+        const { data: retryData, error: retryError } = await supabase
+          .from('profile')
+          .update(strippedPayload)
+          .eq('id', targetId)
+          .select()
+          .single();
+
+        if (retryError) throw retryError;
+        
+        return {
+          ...retryData,
+          instagram_url: updates.instagram_url,
+          twitter_url: updates.twitter_url,
+          youtube_url: updates.youtube_url,
+        } as Profile;
+      }
+      throw error;
+    }
+    return data as Profile;
+  } catch (err: any) {
+    console.error('Failed to save to Supabase:', err);
+    return getLS<Profile>(LS_KEYS.PROFILE, DEFAULT_PROFILE);
+  }
 }
 
 // ==========================================
