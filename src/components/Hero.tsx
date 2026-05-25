@@ -97,6 +97,16 @@ export default function Hero() {
           {profile?.intro_bio || "Specializing in designing and crafting premium frontends and robust full-stack applications. I bring designs to life with micro-interactions, pixel-perfection, and codebase patterns."}
         </motion.p>
 
+        {/* SEO-Optimized Content */}
+        <motion.div
+          variants={itemVariants}
+          className="mx-auto mt-8 max-w-2xl"
+        >
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            As a <strong>Web Developer</strong> based in Sukabumi, Indonesia, I specialize in building high-performance digital experiences using modern technologies including <strong>React</strong>, <strong>Next.js</strong>, <strong>TypeScript</strong>, and <strong>Tailwind CSS</strong>. I combine frontend development expertise with UI/UX design principles to create responsive, accessible web applications that engage users and drive results.
+          </p>
+        </motion.div>
+
         {/* Action Buttons & Socials */}
         <motion.div
           variants={itemVariants}
@@ -124,7 +134,7 @@ export default function Hero() {
         {/* Social shortcuts */}
         <motion.div
           variants={itemVariants}
-          className="mt-12 flex justify-center gap-6"
+          className="mt-12 flex justify-center gap-6 mb-20 sm:mb-0"
         >
           <a 
             href={profile?.github_url || "https://github.com/nadhiv"} 
@@ -169,7 +179,7 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2, duration: 0.5 }}
-        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
+        className="absolute bottom-2 sm:bottom-8 left-1/2 z-10 -translate-x-1/2"
       >
         <a href="#about" aria-label="Scroll Down">
           <div className="flex h-10 w-6 justify-center rounded-full border-2 border-muted-foreground/30 p-1">

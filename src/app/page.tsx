@@ -3,12 +3,47 @@ import Hero from "@/components/Hero";
 import About from "@/components/About";
 import TechStack from "@/components/TechStack";
 import Projects from "@/components/Projects";
+import Services from "@/components/Services";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
 export default function Home() {
+  // JSON-LD Schema untuk Person
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Nadhiv Adam",
+    jobTitle: "Web Developer",
+    url: process.env.NEXT_PUBLIC_BASE_URL || "https://nadhivadam.com",
+    image: "/profile-image.jpg",
+    sameAs: [
+      "https://linkedin.com/in/nadhiv-adam",
+      "https://github.com/nadhiv",
+      "https://twitter.com/nadhivadam",
+    ],
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Sukabumi",
+      addressCountry: "Indonesia",
+    },
+    knowsAbout: [
+      "Frontend Development",
+      "React",
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "UI/UX Design",
+    ],
+  };
+
   return (
     <div className="relative min-h-screen flex flex-col">
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       {/* Dynamic Ambient Background Elements */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-[10%] left-[20%] h-[40rem] w-[40rem] rounded-full bg-purple-500/5 blur-[120px] dark:bg-purple-500/5" />
@@ -40,7 +75,13 @@ export default function Home() {
           <div className="h-[1px] w-4/5 max-w-4xl bg-gradient-to-r from-transparent via-border/50 to-transparent" />
         </div>
 
-        <Projects />
+          <Services />
+        
+          <div className="w-full flex justify-center py-4">
+            <div className="h-[1px] w-4/5 max-w-4xl bg-gradient-to-r from-transparent via-border/50 to-transparent" />
+          </div>
+
+          <Projects />
 
         <div className="w-full flex justify-center py-4">
           <div className="h-[1px] w-4/5 max-w-4xl bg-gradient-to-r from-transparent via-border/50 to-transparent" />

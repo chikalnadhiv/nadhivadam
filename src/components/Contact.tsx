@@ -170,7 +170,7 @@ export default function Contact() {
                         required
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        placeholder="John Doe"
+                        placeholder="Ucup"
                         disabled={status === "sending"}
                         className="rounded-xl bg-white dark:bg-zinc-900/80 text-zinc-900 dark:text-white backdrop-blur-sm px-4 py-3.5 text-sm outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/30 focus:bg-white/90 dark:focus:bg-zinc-900 disabled:opacity-50 placeholder:text-muted-foreground/60"
                       />
@@ -187,7 +187,7 @@ export default function Contact() {
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="john@example.com"
+                        placeholder="ucup@google.com"
                         disabled={status === "sending"}
                         className="rounded-xl bg-white dark:bg-zinc-900/80 text-zinc-900 dark:text-white backdrop-blur-sm px-4 py-3.5 text-sm outline-none transition-all duration-200 focus:ring-2 focus:ring-primary/30 focus:bg-white/90 dark:focus:bg-zinc-900 disabled:opacity-50 placeholder:text-muted-foreground/60"
                       />

@@ -69,11 +69,11 @@ export default function TechStack() {
         {/* Section Header */}
         <div className="flex flex-col items-center text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Tech <span className="gradient-text">Stack</span>
+            Skills &amp; <span className="gradient-text">Technologies</span>
           </h2>
           <div className="divider-gradient mx-auto mt-4" />
           <p className="mt-4 max-w-md text-muted-foreground text-sm sm:text-base">
-            The core tools, languages, and technologies I utilize to bring fully interactive digital interfaces to life.
+            The core tools, languages, and technologies I utilize to bring fully interactive digital interfaces to life. Proficient in modern frontend frameworks and backend technologies.
           </p>
         </div>
 
