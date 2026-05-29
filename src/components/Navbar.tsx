@@ -75,6 +75,18 @@ export default function Navbar() {
     };
   }, []);
 
+  // Lock body scroll when mobile menu is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   if (!mounted) return null;
 
   return (
@@ -99,179 +111,216 @@ export default function Navbar() {
         style={{ scaleX: scrollYProgress }}
       />
 
-      <div className="flex justify-center px-8 md:px-0">
-        <nav
-          className={`
-            my-4 rounded-3xl px-4 md:px-8 py-3
-            flex items-center justify-between
-            transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]
-            w-full md:max-w-6xl
-            ${scrolled
-              ? "bg-white dark:bg-zinc-900 shadow-md"
-              : "bg-white dark:bg-zinc-900 shadow-sm"
-            }
-          `}
-        >
-          {/* Logo */}
-          <a
-            href="/"
-            className="flex items-center gap-2 md:gap-3 mr-6"
-          >
-            <div className="relative w-8 h-8 md:w-10 md:h-10 rounded-lg overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10 p-0.5 hover:shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
-              <Image
-                src="/ndhvlogo.png"
-                alt="Nadhiv Adam Logo"
-                width={40}
-                height={40}
-                className="w-full h-full object-contain"
-                priority
-              />
-            </div>
-            <div className="hidden sm:block">
-              <div className="text-sm md:text-base font-bold tracking-tight">
-                <span className="gradient-text">Nadhiv</span>
-              </div>
-              <div className="text-xs text-foreground/70 font-medium">Web Developer</div>
-            </div>
-          </a>
-
-          {/* Desktop Nav Items (centered) */}
-          <div className="hidden md:flex items-center justify-center flex-1">
-            <div className="flex items-center gap-8">
-              {NAV_ITEMS.map((item, idx) => {
-                const isHashLink = item.href.startsWith("#");
-                const sectionId = isHashLink ? item.href.substring(1) : "";
-                let isActive = false;
-                if (currentPathname === "/") {
-                  // Home: aktifkan hash link jika activeSection cocok
-                  isActive = isHashLink && activeSection === sectionId;
-                  // Home link aktif jika activeSection === 'home'
-                  if (!isHashLink && item.href === "/") {
-                    isActive = activeSection === "home";
-                  }
-                } else {
-                  // Halaman lain: aktifkan hanya jika path sama persis
-                  isActive = !isHashLink && currentPathname === item.href;
-                }
-                return (
-                  <motion.a
-                    key={item.href}
-                    href={item.href}
-                    whileHover={{ scale: 1.05, opacity: 1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`relative inline-flex items-center gap-1 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
-                      ${isActive
-                        ? 'text-primary bg-primary/10 shadow-md shadow-primary/20'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
-                      }`}
-                  >
-                    {item.label}
-                    {isActive && (
-                      <motion.div
-                        layoutId="nav-indicator"
-                        className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/5 to-primary/0 pointer-events-none"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    )}
-                  </motion.a>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Right Actions (desktop) */}
-          <div className="hidden md:flex items-center gap-4">
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="rounded-full p-2 text-foreground/60 hover:text-foreground transition-colors duration-200"
-              aria-label="Toggle Theme"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-4 w-4 text-amber-400" />
-              ) : (
-                <Moon className="h-4 w-4 text-indigo-600" />
-              )}
-            </button>
-
-            <a
-              href="#support"
-              className="inline-flex items-center gap-2 bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-100 px-4 py-2 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-colors duration-200"
-            >
-              Support us
-            </a>
-          </div>
-
-          {/* Mobile Actions */}
-          <div className="flex items-center gap-2 md:hidden">
-            <button
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="rounded-full p-2 text-foreground/75 hover:bg-foreground/5"
-              aria-label="Toggle Theme"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-4.5 w-4.5 text-amber-400" />
-              ) : (
-                <Moon className="h-4.5 w-4.5 text-indigo-600" />
-              )}
-            </button>
-
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="rounded-full p-2 text-foreground/75 hover:bg-foreground/5"
-              aria-label="Toggle Menu"
-            >
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
-          </div>
-        </nav>
-      </div>
-
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Menu Backdrop */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.6 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="mx-4 z-40 flex flex-col gap-4 rounded-2xl p-6 shadow-xl md:hidden bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800"
-          >
-            <AnimatePresence>
-              {NAV_ITEMS.map((item, idx) => {
-                const isHashLink = item.href.startsWith("#");
-                const sectionId = isHashLink ? item.href.substring(1) : "";
-                let isActive = false;
-                if (window.location.pathname === "/") {
-                  isActive = isHashLink && activeSection === sectionId;
-                  if (!isHashLink && item.href === "/") {
-                    isActive = activeSection === "home";
-                  }
-                } else {
-                  isActive = !isHashLink && window.location.pathname === item.href;
-                }
-                return (
-                  <motion.a
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ delay: 0.05 * idx, duration: 0.25 }}
-                    whileHover={{ scale: 1.05, color: "var(--tw-color-primary)" }}
-                    className={`text-lg font-medium transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground/80 hover:text-primary'
-                      }`}
-                  >
-                    {item.label}
-                  </motion.a>
-                );
-              })}
-            </AnimatePresence>
-          </motion.div>
+            onClick={() => setIsOpen(false)}
+            className="fixed inset-0 z-30 bg-black md:hidden pointer-events-auto"
+          />
         )}
       </AnimatePresence>
+
+      <div className="flex justify-center px-8 md:px-0">
+        <div className="w-full md:max-w-6xl mx-auto relative z-40">
+          <nav
+            className={`
+              my-4 rounded-3xl px-4 md:px-8 py-3
+              flex items-center justify-between
+              transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]
+              w-full
+              ${scrolled
+                ? "bg-white dark:bg-zinc-900 shadow-md"
+                : "bg-white dark:bg-zinc-900 shadow-sm"
+              }
+            `}
+          >
+            {/* Logo */}
+            <a
+              href="/"
+              className="flex items-center gap-2 md:gap-3 mr-6"
+            >
+              <div className="relative w-8 h-8 md:w-10 md:h-10 rounded-lg overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10 p-0.5 hover:shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
+                <Image
+                  src="/ndhvlogo.png"
+                  alt="Nadhiv Adam Logo"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-contain"
+                  priority
+                />
+              </div>
+              <div className="hidden sm:block">
+                <div className="text-sm md:text-base font-bold tracking-tight">
+                  <span className="gradient-text">Nadhiv</span>
+                </div>
+                <div className="text-xs text-foreground/70 font-medium">Web Developer</div>
+              </div>
+            </a>
+
+            {/* Desktop Nav Items (centered) */}
+            <div className="hidden md:flex items-center justify-center flex-1">
+              <div className="flex items-center gap-8">
+                {NAV_ITEMS.map((item, idx) => {
+                  const isHashLink = item.href.startsWith("#");
+                  const sectionId = isHashLink ? item.href.substring(1) : "";
+                  let isActive = false;
+                  if (currentPathname === "/") {
+                    // Home: aktifkan hash link jika activeSection cocok
+                    isActive = isHashLink && activeSection === sectionId;
+                    // Home link aktif jika activeSection === 'home'
+                    if (!isHashLink && item.href === "/") {
+                      isActive = activeSection === "home";
+                    }
+                  } else {
+                    // Halaman lain: aktifkan hanya jika path sama persis
+                    isActive = !isHashLink && currentPathname === item.href;
+                  }
+                  return (
+                    <motion.a
+                      key={item.href}
+                      href={item.href}
+                      whileHover={{ scale: 1.05, opacity: 1 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`relative inline-flex items-center gap-1 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
+                        ${isActive
+                          ? 'text-primary bg-primary/10 shadow-md shadow-primary/20'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
+                        }`}
+                    >
+                      {item.label}
+                      {isActive && (
+                        <motion.div
+                          layoutId="nav-indicator"
+                          className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/5 to-primary/0 pointer-events-none"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.3 }}
+                        />
+                      )}
+                    </motion.a>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Right Actions (desktop) */}
+            <div className="hidden md:flex items-center gap-4">
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="rounded-full p-2 text-foreground/60 hover:text-foreground transition-colors duration-200 cursor-pointer"
+                aria-label="Toggle Theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-4 w-4 text-amber-400" />
+                ) : (
+                  <Moon className="h-4 w-4 text-indigo-600" />
+                )}
+              </button>
+
+              <a
+                href="#support"
+                className="inline-flex items-center gap-2 bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-100 px-4 py-2 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-colors duration-200"
+              >
+                Support us
+              </a>
+            </div>
+
+            {/* Mobile Actions */}
+            <div className="flex items-center gap-2 md:hidden">
+              <button
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className="rounded-full p-2 text-foreground/75 hover:bg-foreground/5 cursor-pointer"
+                aria-label="Toggle Theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-4.5 w-4.5 text-amber-400" />
+                ) : (
+                  <Moon className="h-4.5 w-4.5 text-indigo-600" />
+                )}
+              </button>
+
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="rounded-full p-2 text-foreground/75 hover:bg-foreground/5 cursor-pointer"
+                aria-label="Toggle Menu"
+              >
+                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            </div>
+          </nav>
+
+          {/* Mobile Menu Drawer */}
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -15, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -15, scale: 0.95 }}
+                transition={{ type: "spring", damping: 25, stiffness: 220 }}
+                className="absolute top-full left-0 right-0 mt-2 z-50 flex flex-col gap-2 rounded-3xl p-5 shadow-2xl md:hidden bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl overflow-y-auto max-h-[calc(100vh-140px)]"
+              >
+                <AnimatePresence>
+                  {NAV_ITEMS.map((item, idx) => {
+                    const isHashLink = item.href.startsWith("#");
+                    const sectionId = isHashLink ? item.href.substring(1) : "";
+                    let isActive = false;
+                    if (window.location.pathname === "/") {
+                      isActive = isHashLink && activeSection === sectionId;
+                      if (!isHashLink && item.href === "/") {
+                        isActive = activeSection === "home";
+                      }
+                    } else {
+                      isActive = !isHashLink && window.location.pathname === item.href;
+                    }
+                    return (
+                      <motion.a
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -10 }}
+                        transition={{ delay: 0.03 * idx, duration: 0.2 }}
+                        whileTap={{ scale: 0.98 }}
+                        className={`flex items-center justify-between px-4 py-3 rounded-2xl text-base font-semibold transition-all duration-300
+                          ${isActive
+                            ? 'text-primary bg-primary/10 shadow-sm shadow-primary/5'
+                            : 'text-foreground/75 hover:text-primary hover:bg-primary/5'
+                          }`}
+                      >
+                        <span>{item.label}</span>
+                        {isActive && (
+                          <motion.div
+                            layoutId="mobile-active-dot"
+                            className="w-1.5 h-1.5 rounded-full bg-primary"
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                          />
+                        )}
+                      </motion.a>
+                    );
+                  })}
+                </AnimatePresence>
+
+                {/* Mobile Support Button */}
+                <div className="pt-4 mt-2">
+                  <a
+                    href="#support"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-center w-full bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-100 px-4 py-3.5 rounded-2xl text-sm font-bold shadow-md transition-colors duration-200"
+                  >
+                    Support us
+                  </a>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
     </header>
   );
 }

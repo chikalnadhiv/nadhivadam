@@ -36,7 +36,7 @@ export default function Hero({ profile }: HeroProps) {
   return (
     <section
       id="home"
-      className="relative flex min-h-screen w-full items-center justify-center overflow-hidden pt-20"
+      className="relative flex min-h-screen w-full items-center justify-center overflow-hidden pt-28 md:pt-20"
     >
       {/* Dynamic Ambient Background Blobs */}
       <div className="absolute inset-0 z-0">

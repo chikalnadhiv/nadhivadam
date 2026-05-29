@@ -16,7 +16,7 @@ type AccentId = typeof ACCENTS[number]["id"];
 
 export default function AccentColorToggle() {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [activeAccent, setActiveAccent] = React.useState<AccentId>("green");
+  const [activeAccent, setActiveAccent] = React.useState<AccentId>("blue");
   const [mounted, setMounted] = React.useState(false);
   const panelRef = React.useRef<HTMLDivElement>(null);
 
@@ -28,7 +28,7 @@ export default function AccentColorToggle() {
       setActiveAccent(saved);
       document.documentElement.setAttribute("data-accent", saved);
     } else {
-      document.documentElement.setAttribute("data-accent", "green");
+      document.documentElement.setAttribute("data-accent", "blue");
     }
 
     // Close panel on click outside

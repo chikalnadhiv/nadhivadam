@@ -82,7 +82,7 @@ export default function RootLayout({
                   if (saved) {
                     document.documentElement.setAttribute('data-accent', saved);
                   } else {
-                    document.documentElement.setAttribute('data-accent', 'green');
+                    document.documentElement.setAttribute('data-accent', 'blue');
                   }
                 } catch (e) {}
               })();
