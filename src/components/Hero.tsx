@@ -3,7 +3,7 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Mail } from "lucide-react";
-import { getProfile, Profile } from "@/lib/supabase";
+import type { Profile } from "@/lib/supabase";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -28,21 +28,11 @@ const itemVariants = {
   },
 };
 
-export default function Hero() {
-  const [profile, setProfile] = React.useState<Profile | null>(null);
+interface HeroProps {
+  profile: Profile;
+}
 
-  React.useEffect(() => {
-    async function loadProfile() {
-      try {
-        const data = await getProfile();
-        setProfile(data);
-      } catch (err) {
-        console.error("Failed to load profile in Hero:", err);
-      }
-    }
-    loadProfile();
-  }, []);
-
+export default function Hero({ profile }: HeroProps) {
   return (
     <section
       id="home"
@@ -50,12 +40,10 @@ export default function Hero() {
     >
       {/* Dynamic Ambient Background Blobs */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-[20%] left-[10%] h-72 w-72 rounded-full bg-purple-500/20 blur-3xl dark:bg-purple-500/10 animate-blob" />
-        <div className="absolute top-[30%] right-[10%] h-80 w-80 rounded-full bg-indigo-500/20 blur-3xl dark:bg-indigo-500/10 animate-blob [animation-delay:2s]" />
-        <div className="absolute bottom-[20%] left-[30%] h-96 w-96 rounded-full bg-cyan-500/20 blur-3xl dark:bg-cyan-500/10 animate-blob [animation-delay:4s]" />
-        
-        {/* Subtle grid pattern overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+        <div className="absolute top-[20%] left-[10%] h-72 w-72 rounded-full bg-primary/20 blur-3xl dark:bg-primary/10 animate-blob" />
+        <div className="absolute top-[30%] right-[10%] h-80 w-80 rounded-full bg-accent/20 blur-3xl dark:bg-accent/10 animate-blob [animation-delay:2s]" />
+        <div className="absolute bottom-[20%] left-[30%] h-96 w-96 rounded-full bg-secondary/20 blur-3xl dark:bg-secondary/10 animate-blob [animation-delay:4s]" />
+
       </div>
 
       <motion.div
@@ -67,9 +55,9 @@ export default function Hero() {
         {/* Short Welcoming Tag */}
         <motion.div
           variants={itemVariants}
-          className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-semibold text-primary dark:text-purple-400 backdrop-blur-md mb-6"
+          className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-xs font-semibold text-primary backdrop-blur-md mb-6"
         >
-          <span>{profile?.availability || "Available for Freelance & Full-time"}</span>
+          <span>{profile.availability || "Available for Freelance & Full-time"}</span>
         </motion.div>
 
         {/* Catchy Main Heading */}
@@ -78,7 +66,7 @@ export default function Hero() {
           className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
         >
           Hi, I am <br />
-          <span className="gradient-text">{profile?.full_name || "Nadhiv Adam"}</span>
+          <span className="gradient-text">{profile.full_name || "Nadhiv Adam"}</span>
         </motion.h1>
 
         {/* Dynamic Subheading / Role */}
@@ -86,7 +74,7 @@ export default function Hero() {
           variants={itemVariants}
           className="mt-6 text-xl font-medium text-foreground/80 sm:text-2xl md:text-3xl"
         >
-          A <span className="font-semibold text-primary dark:text-purple-400">{profile?.title || "Web Developer"}</span> building fast, elegant digital experiences.
+          A <span className="font-semibold text-primary">{profile.title || "Web Developer"}</span> building fast, elegant digital experiences.
         </motion.h2>
 
         {/* Professional Bio Hook */}
@@ -94,7 +82,7 @@ export default function Hero() {
           variants={itemVariants}
           className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
         >
-          {profile?.intro_bio || "Specializing in designing and crafting premium frontends and robust full-stack applications. I bring designs to life with micro-interactions, pixel-perfection, and codebase patterns."}
+          {profile.intro_bio || "Specializing in designing and crafting premium frontends and robust full-stack applications. I bring designs to life with micro-interactions, pixel-perfection, and codebase patterns."}
         </motion.p>
 
         {/* SEO-Optimized Content */}
@@ -115,7 +103,7 @@ export default function Hero() {
           {/* Main CTA */}
           <a
             href="#projects"
-            className="group relative inline-flex items-center justify-center gap-2 rounded-full px-8 py-3 font-semibold text-sm transition-all duration-300 bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/50 hover:scale-105 active:scale-95"
+            className="group btn-primary"
           >
             View Featured Work
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1.5" />
@@ -136,11 +124,11 @@ export default function Hero() {
           variants={itemVariants}
           className="mt-12 flex justify-center gap-6 mb-20 sm:mb-0"
         >
-          <a 
-            href={profile?.github_url || "https://github.com/nadhiv"} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="group relative rounded-full p-3 backdrop-blur-md transition-all duration-300 hover:scale-110 bg-white/10 hover:bg-white/20 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/70 border border-white/20 hover:border-white/40 text-foreground/70 hover:text-foreground" 
+          <a
+            href={profile.github_url || "https://github.com/nadhiv"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-full p-3 backdrop-blur-md transition-all duration-300 hover:scale-110 bg-white/10 hover:bg-white/20 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/70 border border-white/20 hover:border-white/40 text-foreground/70 hover:text-foreground"
             aria-label="GitHub"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -149,11 +137,11 @@ export default function Hero() {
             </svg>
             <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 rounded-md bg-foreground px-2 py-1 text-xs font-semibold text-background opacity-0 transition-opacity group-hover:opacity-100">GitHub</span>
           </a>
-          <a 
-            href={profile?.linkedin_url || "https://linkedin.com/in/nadhiv"} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="group relative rounded-full p-3 backdrop-blur-md transition-all duration-300 hover:scale-110 bg-white/10 hover:bg-white/20 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/70 border border-white/20 hover:border-white/40 text-foreground/70 hover:text-foreground" 
+          <a
+            href={profile.linkedin_url || "https://linkedin.com/in/nadhiv"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative rounded-full p-3 backdrop-blur-md transition-all duration-300 hover:scale-110 bg-white/10 hover:bg-white/20 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/70 border border-white/20 hover:border-white/40 text-foreground/70 hover:text-foreground"
             aria-label="LinkedIn"
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -163,9 +151,9 @@ export default function Hero() {
             </svg>
             <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 rounded-md bg-foreground px-2 py-1 text-xs font-semibold text-background opacity-0 transition-opacity group-hover:opacity-100">LinkedIn</span>
           </a>
-          <a 
-            href={`mailto:${profile?.email || "nadhiv@example.com"}`} 
-            className="group relative rounded-full p-3 backdrop-blur-md transition-all duration-300 hover:scale-110 bg-white/10 hover:bg-white/20 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/70 border border-white/20 hover:border-white/40 text-foreground/70 hover:text-foreground" 
+          <a
+            href={`mailto:${profile.email || "nadhiv@example.com"}`}
+            className="group relative rounded-full p-3 backdrop-blur-md transition-all duration-300 hover:scale-110 bg-white/10 hover:bg-white/20 dark:bg-zinc-900/40 dark:hover:bg-zinc-900/70 border border-white/20 hover:border-white/40 text-foreground/70 hover:text-foreground"
             aria-label="Email"
           >
             <Mail className="h-5 w-5" />

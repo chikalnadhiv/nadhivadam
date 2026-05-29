@@ -6,24 +6,32 @@ import Projects from "@/components/Projects";
 import Services from "@/components/Services";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import { getProfile, getProjects, getSkills } from "@/lib/supabase";
 
-export default function Home() {
+export default async function Home() {
+  // Fetch all data in parallel on the server — eliminates client-side waterfall
+  const [profile, projects, skills] = await Promise.all([
+    getProfile(),
+    getProjects(),
+    getSkills(),
+  ]);
+
   // JSON-LD Schema untuk Person
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: "Nadhiv Adam",
-    jobTitle: "Web Developer",
+    name: profile.full_name,
+    jobTitle: profile.title,
     url: process.env.NEXT_PUBLIC_BASE_URL || "https://nadhivadam.com",
     image: "/profile-image.jpg",
     sameAs: [
-      "https://linkedin.com/in/nadhiv-adam",
-      "https://github.com/nadhiv",
+      profile.linkedin_url,
+      profile.github_url,
       "https://twitter.com/nadhivadam",
     ],
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Sukabumi",
+      addressLocality: profile.location || "Sukabumi",
       addressCountry: "Indonesia",
     },
     knowsAbout: [
@@ -56,42 +64,21 @@ export default function Home() {
 
       {/* Main Sections */}
       <main className="relative z-10 flex-grow">
-        <Hero />
-        
-        {/* Subtle decorative section transition line */}
-        <div className="w-full flex justify-center py-4">
-          <div className="h-[1px] w-4/5 max-w-4xl bg-gradient-to-r from-transparent via-border/50 to-transparent" />
-        </div>
-        
-        <About />
+        <Hero profile={profile} />
 
-        <div className="w-full flex justify-center py-4">
-          <div className="h-[1px] w-4/5 max-w-4xl bg-gradient-to-r from-transparent via-border/50 to-transparent" />
-        </div>
+        <About profile={profile} />
 
-        <TechStack />
+        <TechStack skills={skills} />
 
-        <div className="w-full flex justify-center py-4">
-          <div className="h-[1px] w-4/5 max-w-4xl bg-gradient-to-r from-transparent via-border/50 to-transparent" />
-        </div>
+        <Services />
 
-          <Services />
-        
-          <div className="w-full flex justify-center py-4">
-            <div className="h-[1px] w-4/5 max-w-4xl bg-gradient-to-r from-transparent via-border/50 to-transparent" />
-          </div>
+        <Projects projects={projects} />
 
-          <Projects />
-
-        <div className="w-full flex justify-center py-4">
-          <div className="h-[1px] w-4/5 max-w-4xl bg-gradient-to-r from-transparent via-border/50 to-transparent" />
-        </div>
-
-        <Contact />
+        <Contact profile={profile} />
       </main>
 
       {/* Global sleek Footer */}
-      <Footer />
+      <Footer profile={profile} />
     </div>
   );
 }

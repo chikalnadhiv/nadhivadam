@@ -2,14 +2,36 @@
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getSkills, Skill } from "@/lib/supabase";
-import * as Icons from "lucide-react";
+import type { Skill } from "@/lib/supabase";
+import {
+  Cpu,
+  Boxes,
+  Code2,
+  Layers,
+  Sparkles,
+  Terminal,
+  CloudLightning,
+  Database,
+  Workflow,
+  GitBranch
+} from "lucide-react";
 
 // Map string keys to Lucide React Icons
+const IconMap: Record<string, React.ComponentType<any>> = {
+  Cpu,
+  Boxes,
+  Code2,
+  Layers,
+  Sparkles,
+  Terminal,
+  CloudLightning,
+  Database,
+  Workflow,
+  GitBranch,
+};
+
 function getIconComponent(iconName: string) {
-  const IconComponent = (Icons as any)[iconName];
-  // Fallback icon if the specified name is invalid
-  return IconComponent || Icons.Code2;
+  return IconMap[iconName] || Code2;
 }
 
 // Function to resolve visual hover glow boundaries based on icon name
@@ -36,28 +58,16 @@ function getHoverStyles(iconName: string): string {
     case "GitBranch":
       return "group-hover:border-orange-500 group-hover:shadow-[0_0_15px_-3px_rgba(249,115,22,0.2)]";
     default:
-      return "group-hover:border-primary/45 group-hover:shadow-[0_0_15px_-3px_rgba(168,85,247,0.25)]";
+      return "group-hover:border-primary/45 group-hover:shadow-[0_0_15px_-3px_rgba(79,119,45,0.25)]";
   }
 }
 
-export default function TechStack() {
-  const [skills, setSkills] = React.useState<Skill[]>([]);
-  const [activeTab, setActiveTab] = React.useState<"all" | "frontend" | "backend" | "tools">("all");
-  const [loading, setLoading] = React.useState(true);
+interface TechStackProps {
+  skills: Skill[];
+}
 
-  React.useEffect(() => {
-    async function loadSkills() {
-      try {
-        const fetched = await getSkills();
-        setSkills(fetched);
-      } catch (err) {
-        console.error("Failed to load skills:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadSkills();
-  }, []);
+export default function TechStack({ skills }: TechStackProps) {
+  const [activeTab, setActiveTab] = React.useState<"all" | "frontend" | "backend" | "tools">("all");
 
   const filteredTech = skills.filter(
     (item) => activeTab === "all" || item.category === activeTab
@@ -84,11 +94,10 @@ export default function TechStack() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`rounded-full px-4 py-2 font-medium transition-all duration-300 capitalize cursor-pointer ${
-                  activeTab === tab
-                    ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg shadow-purple-500/30"
+                className={`rounded-full px-4 py-2 font-medium transition-all duration-300 capitalize cursor-pointer ${activeTab === tab
+                    ? "bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/30"
                     : "text-foreground/60 hover:text-foreground hover:bg-white/5"
-                }`}
+                  }`}
               >
                 {tab}
               </button>
@@ -97,51 +106,36 @@ export default function TechStack() {
         </div>
 
         {/* Skills Cards Grid */}
-        {loading ? (
-          /* Loading Skeletons */
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {Array.from({ length: 5 }).map((_, idx) => (
-              <div 
-                key={idx} 
-                className="card-premium h-[130px] animate-pulse flex flex-col items-center justify-center p-6"
-              >
-                <div className="h-10 w-10 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-xl mb-3" />
-                <div className="h-4 bg-gradient-to-r from-zinc-700 to-zinc-600 rounded-lg w-2/3" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            <AnimatePresence mode="popLayout">
-              {filteredTech.map((item, index) => {
-                const Icon = getIconComponent(item.icon);
-                const hoverStyle = getHoverStyles(item.icon);
-                return (
-                  <motion.div
-                    key={item.id}
-                    layout
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-                    transition={{
-                      duration: 0.4,
-                      delay: index * 0.02,
-                      ease: [0.215, 0.61, 0.355, 1],
-                    }}
-                    whileHover={{ y: -6, scale: 1.08 }}
-                    className={`group card-premium relative flex flex-col items-center justify-center p-6 text-center ${hoverStyle}`}
-                  >
-                    <div className="mb-4 rounded-xl bg-gradient-to-br from-primary/15 to-indigo-500/10 p-3 text-foreground/70 transition-all duration-300 group-hover:from-primary/25 group-hover:to-indigo-500/20 group-hover:text-primary group-hover:shadow-lg group-hover:shadow-primary/20">
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <h3 className="text-sm font-semibold tracking-tight text-foreground truncate max-w-full transition-colors duration-300 group-hover:text-primary">{item.name}</h3>
-                    <span className="mt-1 text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">{item.category}</span>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </div>
-        )}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <AnimatePresence mode="popLayout">
+            {filteredTech.map((item, index) => {
+              const Icon = getIconComponent(item.icon);
+              const hoverStyle = getHoverStyles(item.icon);
+              return (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
+                  transition={{
+                    duration: 0.4,
+                    delay: index * 0.02,
+                    ease: [0.215, 0.61, 0.355, 1],
+                  }}
+                  whileHover={{ y: -6, scale: 1.08 }}
+                  className={`group card-premium relative flex flex-col items-center justify-center p-6 text-center ${hoverStyle}`}
+                >
+                  <div className="mb-4 rounded-xl bg-gradient-to-br from-primary/15 to-accent/10 p-3 text-foreground/70 transition-all duration-300 group-hover:from-primary/25 group-hover:to-accent/20 group-hover:text-primary group-hover:shadow-lg group-hover:shadow-primary/20">
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-sm font-semibold tracking-tight text-foreground truncate max-w-full transition-colors duration-300 group-hover:text-primary">{item.name}</h3>
+                  <span className="mt-1 text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">{item.category}</span>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        </div>
       </div>
     </section>
   );

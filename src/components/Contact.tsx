@@ -3,27 +3,17 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, MapPin, Send, CheckCircle2, Loader2 } from "lucide-react";
-import { getProfile, Profile } from "@/lib/supabase";
+import type { Profile } from "@/lib/supabase";
 
-export default function Contact() {
-  const [profile, setProfile] = React.useState<Profile | null>(null);
-  
+interface ContactProps {
+  profile: Profile;
+}
+
+export default function Contact({ profile }: ContactProps) {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [message, setMessage] = React.useState("");
   const [status, setStatus] = React.useState<"idle" | "sending" | "success">("idle");
-
-  React.useEffect(() => {
-    async function loadProfile() {
-      try {
-        const data = await getProfile();
-        setProfile(data);
-      } catch (err) {
-        console.error("Failed to load profile in Contact:", err);
-      }
-    }
-    loadProfile();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,8 +40,8 @@ export default function Contact() {
     setTimeout(() => setStatus("idle"), 4000);
   };
 
-  const adminEmail = profile?.email || "nadhiv@example.com";
-  const adminLocation = profile?.location || "Jakarta, Indonesia";
+  const adminEmail = profile.email || "nadhiv@example.com";
+  const adminLocation = profile.location || "Jakarta, Indonesia";
 
   return (
     <section id="contact" className="py-20 md:py-28 transition-colors duration-300">
@@ -90,7 +80,7 @@ export default function Contact() {
                 href={`mailto:${adminEmail}`}
                 className="card-premium group flex items-center gap-4 p-5"
               >
-                <div className="rounded-xl bg-gradient-to-br from-primary/20 to-indigo-500/10 p-3 text-primary group-hover:from-primary/30 group-hover:to-indigo-500/20 group-hover:shadow-lg group-hover:shadow-primary/20 transition-all duration-300">
+                <div className="rounded-xl bg-gradient-to-br from-primary/20 to-accent/10 p-3 text-primary group-hover:from-primary/30 group-hover:to-accent/20 group-hover:shadow-lg group-hover:shadow-primary/20 transition-all duration-300">
                   <Mail className="h-5 w-5" />
                 </div>
                 <div>
@@ -101,7 +91,7 @@ export default function Contact() {
 
               {/* Location */}
               <div className="card-premium flex items-center gap-4 p-5">
-                <div className="rounded-xl bg-gradient-to-br from-primary/20 to-indigo-500/10 p-3 text-primary">
+                <div className="rounded-xl bg-gradient-to-br from-primary/20 to-accent/10 p-3 text-primary">
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
@@ -140,7 +130,7 @@ export default function Contact() {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                      className="rounded-full bg-emerald-500/20 p-4 text-emerald-400 mb-6 shadow-lg shadow-emerald-500/20"
+                      className="rounded-full bg-primary/20 p-4 text-primary mb-6 shadow-lg shadow-primary/20"
                     >
                       <CheckCircle2 className="h-12 w-12" />
                     </motion.div>
@@ -214,7 +204,7 @@ export default function Contact() {
                     <button
                       type="submit"
                       disabled={status === "sending"}
-                      className="inline-flex items-center justify-center gap-2 rounded-full w-full px-6 py-3 font-semibold text-sm transition-all duration-300 bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/50 hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
+                      className="group btn-primary w-full disabled:opacity-50 cursor-pointer"
                     >
                       {status === "sending" ? (
                         <>

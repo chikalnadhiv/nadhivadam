@@ -2,32 +2,23 @@
 
 import * as React from "react";
 import { Mail } from "lucide-react";
-import { getProfile, Profile } from "@/lib/supabase";
+import type { Profile } from "@/lib/supabase";
 
-export default function Footer() {
-  const [profile, setProfile] = React.useState<Profile | null>(null);
+interface FooterProps {
+  profile: Profile;
+}
+
+export default function Footer({ profile }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
-  React.useEffect(() => {
-    async function loadProfile() {
-      try {
-        const data = await getProfile();
-        setProfile(data);
-      } catch (err) {
-        console.error("Failed to load profile in Footer:", err);
-      }
-    }
-    loadProfile();
-  }, []);
-
-  const name = profile?.full_name || "Nadhiv Adam";
-  const title = profile?.title || "Web Developer & Designer";
-  const email = profile?.email || "nadhiv@example.com";
-  const github = profile?.github_url || "https://github.com/nadhiv";
-  const linkedin = profile?.linkedin_url || "https://linkedin.com/in/nadhiv";
-  const instagram = profile?.instagram_url;
-  const twitter = profile?.twitter_url;
-  const youtube = profile?.youtube_url;
+  const name = profile.full_name || "Nadhiv Adam";
+  const title = profile.title || "Web Developer & Designer";
+  const email = profile.email || "nadhiv@example.com";
+  const github = profile.github_url || "https://github.com/nadhiv";
+  const linkedin = profile.linkedin_url || "https://linkedin.com/in/nadhiv";
+  const instagram = profile.instagram_url;
+  const twitter = profile.twitter_url;
+  const youtube = profile.youtube_url;
 
   return (
     <footer className="relative z-10 bg-gradient-to-t from-background/80 via-background/90 to-transparent py-14 md:py-20 transition-colors duration-300 backdrop-blur-xl">

@@ -21,67 +21,85 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [activeSection, setActiveSection] = React.useState("home");
   const [scrolled, setScrolled] = React.useState(false);
+  const [currentPathname, setCurrentPathname] = React.useState("");
   const { scrollYProgress } = useScroll();
 
   React.useEffect(() => {
     setMounted(true);
+    const pathname = window.location.pathname;
+    setCurrentPathname(pathname);
 
-    // Set active section based on pathname
-    const updateActiveSection = () => {
-      const pathname = window.location.pathname;
-      
-      // Map pathname to section
-      if (pathname === "/") {
-        setActiveSection("home");
-      } else if (pathname === "/services") {
-        setActiveSection("services");
-      } else if (pathname === "/projects") {
-        setActiveSection("projects");
-      } else if (pathname === "/contact") {
-        setActiveSection("contact");
-      }
-    };
+    // Set active section based on pathname initial state
+    if (pathname === "/") {
+      setActiveSection("home");
+    } else if (pathname === "/services") {
+      setActiveSection("services");
+    } else if (pathname === "/projects") {
+      setActiveSection("projects");
+    } else if (pathname === "/contact") {
+      setActiveSection("contact");
+    }
 
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-
-      // Only check active section if on home page
-      if (window.location.pathname === "/") {
-        const sections = ["home", "about", "skills", "services", "projects", "contact"];
-        const scrollPosition = window.scrollY + 150;
-
-        for (const section of sections) {
-          const el = document.getElementById(section);
-          if (el) {
-            const top = el.offsetTop;
-            const height = el.offsetHeight;
-            if (scrollPosition >= top && scrollPosition < top + height) {
-              setActiveSection(section);
-              break;
-            }
-          }
-        }
-      }
     };
 
-    // Initial check on mount
-    updateActiveSection();
-
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    // High performance IntersectionObserver scrollspy to avoid forced reflows (offsetTop/offsetHeight)
+    let observer: IntersectionObserver | null = null;
+    if (pathname === "/") {
+      const sections = ["home", "about", "skills", "services", "projects", "contact"];
+      const elements = sections.map(id => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(entry.target.id);
+            }
+          });
+        },
+        {
+          rootMargin: "-25% 0px -55% 0px", // Trigger active state when section is in the view focus area
+          threshold: 0,
+        }
+      );
+
+      elements.forEach((el) => observer?.observe(el));
+    }
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      observer?.disconnect();
+    };
   }, []);
 
   if (!mounted) return null;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-transparent">
+      {/* Blurred Background Layer (fades out smoothly to avoid any sharp lines) */}
+      <div
+        className={`absolute inset-x-0 top-0 -z-10 transition-all duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] pointer-events-none
+          ${scrolled
+            ? "h-[88px] md:h-[96px] bg-white/40 dark:bg-zinc-950/40 backdrop-blur-md opacity-100"
+            : "h-0 opacity-0"
+          }
+        `}
+        style={{
+          maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)',
+        }}
+      />
+
       {/* Scroll Progress Bar */}
       <motion.div
-        className="h-[2px] bg-gradient-to-r from-purple-500 via-indigo-500 to-cyan-500 origin-left"
+        className="h-[2px] bg-gradient-to-r from-primary via-accent to-secondary origin-left"
         style={{ scaleX: scrollYProgress }}
       />
 
-      <div className="flex justify-center px-4 md:px-0">
+      <div className="flex justify-center px-8 md:px-0">
         <nav
           className={`
             my-4 rounded-3xl px-4 md:px-8 py-3
@@ -89,8 +107,8 @@ export default function Navbar() {
             transition-all duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]
             w-full md:max-w-6xl
             ${scrolled
-              ? "bg-white/90 dark:bg-zinc-800/95 backdrop-blur-sm shadow-sm"
-              : "bg-white/5 dark:bg-zinc-900/5"
+              ? "bg-white dark:bg-zinc-900 shadow-md"
+              : "bg-white dark:bg-zinc-900 shadow-sm"
             }
           `}
         >
@@ -99,7 +117,7 @@ export default function Navbar() {
             href="/"
             className="flex items-center gap-2 md:gap-3 mr-6"
           >
-            <div className="relative w-8 h-8 md:w-10 md:h-10 rounded-lg overflow-hidden bg-gradient-to-br from-purple-500/10 to-indigo-500/10 p-0.5 hover:shadow-lg hover:shadow-purple-500/20 transition-shadow duration-300">
+            <div className="relative w-8 h-8 md:w-10 md:h-10 rounded-lg overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10 p-0.5 hover:shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
               <Image
                 src="/ndhvlogo.png"
                 alt="Nadhiv Adam Logo"
@@ -124,7 +142,7 @@ export default function Navbar() {
                 const isHashLink = item.href.startsWith("#");
                 const sectionId = isHashLink ? item.href.substring(1) : "";
                 let isActive = false;
-                if (window.location.pathname === "/") {
+                if (currentPathname === "/") {
                   // Home: aktifkan hash link jika activeSection cocok
                   isActive = isHashLink && activeSection === sectionId;
                   // Home link aktif jika activeSection === 'home'
@@ -133,7 +151,7 @@ export default function Navbar() {
                   }
                 } else {
                   // Halaman lain: aktifkan hanya jika path sama persis
-                  isActive = !isHashLink && window.location.pathname === item.href;
+                  isActive = !isHashLink && currentPathname === item.href;
                 }
                 return (
                   <motion.a
@@ -142,8 +160,8 @@ export default function Navbar() {
                     whileHover={{ scale: 1.05, opacity: 1 }}
                     whileTap={{ scale: 0.95 }}
                     className={`relative inline-flex items-center gap-1 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200
-                      ${isActive 
-                        ? 'text-primary bg-primary/10 shadow-md shadow-primary/20' 
+                      ${isActive
+                        ? 'text-primary bg-primary/10 shadow-md shadow-primary/20'
                         : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
                       }`}
                   >
@@ -179,7 +197,7 @@ export default function Navbar() {
 
             <a
               href="#support"
-              className="inline-flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-shadow duration-200"
+              className="inline-flex items-center gap-2 bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-100 px-4 py-2 rounded-full text-sm font-semibold shadow-sm hover:shadow-md transition-colors duration-200"
             >
               Support us
             </a>
@@ -218,7 +236,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="mx-4 z-40 flex flex-col gap-4 rounded-2xl p-6 shadow-xl md:hidden bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl"
+            className="mx-4 z-40 flex flex-col gap-4 rounded-2xl p-6 shadow-xl md:hidden bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800"
           >
             <AnimatePresence>
               {NAV_ITEMS.map((item, idx) => {
@@ -243,9 +261,8 @@ export default function Navbar() {
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ delay: 0.05 * idx, duration: 0.25 }}
                     whileHover={{ scale: 1.05, color: "var(--tw-color-primary)" }}
-                    className={`text-lg font-medium transition-colors ${
-                      isActive ? 'text-primary font-semibold' : 'text-foreground/80 hover:text-primary'
-                    }`}
+                    className={`text-lg font-medium transition-colors ${isActive ? 'text-primary font-semibold' : 'text-foreground/80 hover:text-primary'
+                      }`}
                   >
                     {item.label}
                   </motion.a>

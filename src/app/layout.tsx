@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import AccentColorToggle from "@/components/ui/AccentColorToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,13 +68,32 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="id"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased scroll-smooth`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var saved = localStorage.getItem('nadhiv-portfolio-accent');
+                  if (saved) {
+                    document.documentElement.setAttribute('data-accent', saved);
+                  } else {
+                    document.documentElement.setAttribute('data-accent', 'green');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-primary/20 selection:text-primary">
         <Providers>
           {children}
+          <AccentColorToggle />
         </Providers>
       </body>
     </html>

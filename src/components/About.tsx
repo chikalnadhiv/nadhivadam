@@ -3,27 +3,17 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import { Award, Code, Globe, User } from "lucide-react";
-import { getProfile, Profile } from "@/lib/supabase";
+import type { Profile } from "@/lib/supabase";
 
-export default function About() {
-  const [profile, setProfile] = React.useState<Profile | null>(null);
+interface AboutProps {
+  profile: Profile;
+}
 
-  React.useEffect(() => {
-    async function loadProfile() {
-      try {
-        const data = await getProfile();
-        setProfile(data);
-      } catch (err) {
-        console.error("Failed to load profile settings in About:", err);
-      }
-    }
-    loadProfile();
-  }, []);
-
+export default function About({ profile }: AboutProps) {
   const stats = [
-    { label: "Years Experience", value: profile?.exp_years || "4+", icon: Award },
-    { label: "Completed Projects", value: profile?.completed_projects || "25+", icon: Code },
-    { label: "Websites Launched", value: profile?.websites_launched || "15+", icon: Globe },
+    { label: "Years Experience", value: profile.exp_years || "4+", icon: Award },
+    { label: "Completed Projects", value: profile.completed_projects || "25+", icon: Code },
+    { label: "Websites Launched", value: profile.websites_launched || "15+", icon: Globe },
   ];
 
   return (
@@ -48,19 +38,19 @@ export default function About() {
           >
             <div className="flex items-center gap-3 mb-4 text-primary">
               <User className="h-5 w-5" />
-              <h3 className="text-xl font-bold tracking-tight">Who is {profile?.full_name || "Nadhiv Adam"}?</h3>
+              <h3 className="text-xl font-bold tracking-tight">Who is {profile.full_name || "Nadhiv Adam"}?</h3>
             </div>
             
             <p className="text-muted-foreground text-base leading-relaxed sm:text-lg">
-              {profile?.bio_p1 || "I am an enthusiastic Web Developer deeply dedicated to creating user-centric, high-performance web applications. My path in coding started out of a fascination with making ideas tangible, and it has evolved into a career centered on writing robust typescript code, optimizing layouts, and creating premium experiences."}
+              {profile.bio_p1 || "I am an enthusiastic Web Developer deeply dedicated to creating user-centric, high-performance web applications. My path in coding started out of a fascination with making ideas tangible, and it has evolved into a career centered on writing robust typescript code, optimizing layouts, and creating premium experiences."}
             </p>
             
             <p className="mt-4 text-muted-foreground text-base leading-relaxed sm:text-lg">
-              {profile?.bio_p2 || "I love combining sophisticated aesthetics with reliable, modular architectures. Working with frameworks like Next.js, standardizing Tailwind configurations, and integrating real-time database backends like Supabase are my daily bread and butter. I pay immense attention to micro-animations, fast page loads, accessibility, and clean code principles."}
+              {profile.bio_p2 || "I love combining sophisticated aesthetics with reliable, modular architectures. Working with frameworks like Next.js, standardizing Tailwind configurations, and integrating real-time database backends like Supabase are my daily bread and butter. I pay immense attention to micro-animations, fast page loads, accessibility, and clean code principles."}
             </p>
             
             <p className="mt-4 text-muted-foreground text-base leading-relaxed sm:text-lg">
-              {profile?.bio_p3 || "When I'm not writing code or tweaking animations in Framer Motion, you can find me reviewing technical documentations, contributing to developer tools, or exploring next-generation design systems to continuously raise the bar."}
+              {profile.bio_p3 || "When I'm not writing code or tweaking animations in Framer Motion, you can find me reviewing technical documentations, contributing to developer tools, or exploring next-generation design systems to continuously raise the bar."}
             </p>
           </motion.div>
 
@@ -79,7 +69,7 @@ export default function About() {
                   key={index}
                   className="card-premium flex items-center gap-4 p-6"
                 >
-                  <div className="rounded-xl bg-gradient-to-br from-primary/20 to-indigo-500/10 p-4 text-primary transition-transform duration-300 group-hover:scale-110">
+                  <div className="rounded-xl bg-gradient-to-br from-primary/20 to-accent/10 p-4 text-primary transition-transform duration-300 group-hover:scale-110">
                     <Icon className="h-6 w-6" />
                   </div>
                   <div className="flex-1">
